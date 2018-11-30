@@ -19,6 +19,7 @@ import UIKit
 import Firebase
 // [END import_vision]
 
+import Alamofire
 /// Main view controller class.
 @objc(ViewController)
 class ViewController:  UIViewController, UINavigationControllerDelegate {
@@ -661,9 +662,43 @@ extension ViewController {
   /// On-Device face API.
   ///
   /// - Parameter image: The image.
+    
+    func uploadImage(img: UIImage){
+        let ImageData = UIImagePNGRepresentation(img)
+        //TODO: change the URL
+        let urlReq = "http://apiUrl.php"
+        //let parameters = ["label": label] //you can comment this if not needed
+        
+        Alamofire.upload(multipartFormData: { multipartFormData in
+            multipartFormData.append(ImageData!, withName: "shop_logo",fileName: "file.jpg", mimeType: "image/jpg")
+           
+        },
+                         to:urlReq)
+        { (result) in
+            switch result {
+            case .success(let upload, _, _):
+                
+                upload.uploadProgress(closure: { (progress) in
+                    print("Upload Progress: \(progress.fractionCompleted)")
+                })
+                
+                upload.responseJSON { response in
+                    print(response.result.value)
+                    if let dic = response.result.value as? NSDictionary{
+                        //TODO: get the label
+                        self.resultsText=response.result.value as! String
+                        self.showResults()
+                    }
+                }
+                
+            case .failure(let encodingError):
+                print(encodingError)
+            }
+        }
+    }
+    
     func detectFaceName(image: UIImage?){
-        self.resultsText = "himanshu"
-        self.showResults()
+        uploadImage(img: image!)
     }
     
   func detectFaces(image: UIImage?) {

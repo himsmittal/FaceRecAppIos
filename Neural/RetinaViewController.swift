@@ -30,6 +30,7 @@ class RetinaViewController: UIViewController {
     
     func uploadImage(img: UIImage, label:String){
         let ImageData = UIImagePNGRepresentation(img)
+        //TODO: change the URL
         let urlReq = "http://apiUrl.php"
         let parameters = ["label": label] //you can comment this if not needed
         
